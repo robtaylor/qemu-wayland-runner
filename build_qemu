@@ -1,0 +1,7 @@
+cd qemu &&
+
+./configure --target-list=x86_64-softmmu,i386-softmmu --enable-werror --audio-drv-list=alsa --disable-vnc --disable-pie --enable-sdl --with-sdlabi=1.2 --enable-vigs --enable-yagl --python=/usr/bin/python2 --disable-gtk --prefix=$HOME/.local/ --enable-kvm &&
+
+make && make install
+
+echo "$PATH"|grep -q '.local' || echo "Please add $HOME/.local to your path"
