@@ -6,5 +6,7 @@ This repository helps you run wayland in qemu. For now it juts runs the tizen im
 
 To run, you will need internet connectivity, then:
 
-```./build_qemu
-```./run_wayland
+```
+./build_qemu
+./run_wayland
+```
