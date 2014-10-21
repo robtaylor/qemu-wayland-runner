@@ -1,15 +1,24 @@
 #!/bin/sh
 
+echo "$PATH" | grep -q '\.local' || ( echo "Please add $HOME/.local to your path" && exit 1 )
+
 cwd=$PWD
+url_md5sums="http://download.tizen.org/snapshots/tizen/common/latest/images/emulator32-wayland/common-emulator-wayland-mbr-i586/MD5SUMS"
+md5sums="MD5SUMS"
 
-url_kernel="http://download.tizen.org/snapshots/tizen/common/latest/images/emulator32-wayland/common-emulator-wayland-mbr-i586/tizen-common_20141020.2_common-emulator-wayland-mbr-i586-vmlinuz-3.12.18-2.3-common-i386-emulator"
+if [ ! -f $md5sums ]; then
+   wget $url_md5sums
+fi
 
-url_rootfs="http://download.tizen.org/snapshots/tizen/common/latest/images/emulator32-wayland/common-emulator-wayland-mbr-i586/tizen-common_20141020.2_common-emulator-wayland-mbr-i586.tar.gz"
 
-rootfs_tgz="tizen-common_20141020.2_common-emulator-wayland-mbr-i586.tar.gz"
+kernel=`grep common-i386-emulator MD5SUMS | cut -c 35-`
+rootfs_tgz=`grep common-emulator-wayland-mbr-i586.tar.gz MD5SUMS | cut -c 35-`
+
+url_rootfs="http://download.tizen.org/snapshots/tizen/common/latest/images/emulator32-wayland/common-emulator-wayland-mbr-i586/$rootfs_tgz"
+url_kernel="http://download.tizen.org/snapshots/tizen/common/latest/images/emulator32-wayland/common-emulator-wayland-mbr-i586/$kernel"
+
 size=1G
 rootfs="tizen-common.img"
-kernel="tizen-common_20141020.2_common-emulator-wayland-mbr-i586-vmlinuz-3.12.18-2.3-common-i386-emulator"
 swap="swap.x86"
 
 cmdline='console=ttyS0 root=/dev/sda rw video=LVDS-1:1920x1080-32@60 ip=10.0.2.15::10.0.2.2:255.255.255.0::eth0:none'
@@ -17,19 +26,19 @@ cmdline="$cmdline vm_name=tizen sdb_port=26100"
 
 serial="file://dev/stderr"
 
-if [ ! -f  $rootfs_tgz ]; then
+if [ ! -f $rootfs_tgz ]; then
    wget $url_rootfs
 fi
 
-if [ ! -f  $rootfs ]; then
+if [ ! -f $rootfs ]; then
    tar xf $rootfs_tgz
 fi
 
-if [ ! -f  $kernel ]; then
+if [ ! -f $kernel ]; then
    wget $url_kernel
 fi
 
-if [ ! -f  $swap ]; then
+if [ ! -f $swap ]; then
   qemu-img create -f raw $swap 1G
   mkswap $swap
 fi
